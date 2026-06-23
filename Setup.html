@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en" data-livestyle-extension="available" class="h-100 full">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=0">
+    <meta name="description" content="Orbi App">
+    <title>Orbi App</title>
+    <link type="image/vnd.microsoft.icon" rel="icon" href="./image/favicon.ico">
+    <link type="image/x-icon" rel="shortcut icon" href="./image/favicon.ico">
+    <link rel="stylesheet" href="./resources/bootstrap.min.css">
+    <link rel="stylesheet" href="./resources/custom.css">
+    <link href="./resources/orbidesktop.min.css" rel="stylesheet">
+    <link href="./resources/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@15.2.2/dist/css/shepherd.min.css">
+    <script type="module">
+      import Shepherd from 'https://cdn.jsdelivr.net/npm/shepherd.js@15.2.2/+esm'
+      
+      let timeoutForNextPage = setTimeout(() => {}, 0);
+      const delayForNextPage = 3000;
+      
+      const mainContent = document.getElementById('main-content');
+      
+      const goToPage = (page) => {
+        clearTimeout(timeoutForNextPage);
+        // Load our next page content
+        mainContent.replaceChildren(document.getElementById(`template-${page}`).content.cloneNode(true))
+        // Change bg color
+        document.body.style.backgroundColor = ['home', 'firmware'].includes(page) ? '#fff' : '#7f7f7f';
+        switch (page) {
+          case 'checking-connection':
+            timeoutForNextPage = setTimeout(() => goToStep('connection-success'), delayForNextPage);
+            break;
+          case 'checking-connection2':
+            timeoutForNextPage = setTimeout(() => goToStep('connection-success2'), delayForNextPage);
+            break;
+          default:
+            break;
+        }
+      };
+
+      window.goToStep = (stepId) => {
+        if (!window.tour) return;
+        clearTimeout(timeoutForNextPage);
+        tour.show(`step-${stepId}`);
+      };
+
+      window.tour = new Shepherd.Tour({
+        useModalOverlay: true,
+        defaultStepOptions: {
+          cancelIcon: {
+            enabled: true
+          },
+          scrollTo: { behavior: 'smooth' },
+          advanceOn: {
+            selector: '.shepherd-modal-overlay-container',
+            event: 'click'
+          }
+        }
+      });
+
+      tour.addStep({ id: 'step-home',
+        title: 'Accessing the web GUI',
+        text: 'Type <code>orbilogin.com</code> or <code>192.168.1.1</code> into your browser and press Enter.',
+        beforeShowPromise() {
+          goToPage('home');
+          return Promise.resolve();
+        },
+        buttons: [
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+      
+      tour.addStep({
+        text: 'Click on<br/><code>If you don’t have a compatible smartphone, click here</code>.',
+        beforeShowPromise() {
+          goToPage('home');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '#link_gui',
+          on: 'top'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+      
+      tour.addStep({ id: 'step-welcome',
+        text: 'Ensure you have connected the Ethernet cable from the ONT to the Internet Port on the back of the Orbi.<br/>Click the <code>NEXT</code> button',
+        beforeShowPromise() {
+          goToPage('welcome');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '.dialog-content > div:first-child',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+      
+      tour.addStep({ id: 'step-tos',
+        text: 'Accept the terms to proceed.<br/>Click the <code>NEXT</code> button',
+        beforeShowPromise() {
+          goToPage('tos');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '.dialog-content > div:first-child',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+      
+      tour.addStep({ id: 'step-checking-connection',
+        text: 'The Orbi will check the internet connection automatically....',
+        beforeShowPromise() {
+          goToPage('checking-connection');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '.dialog-content > div:first-child',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+      
+      tour.addStep({ id: 'step-connection-success',
+        text: 'Successful connection, otherwise choose <code>No, I want to configure the Internet connection myself</code>.<br/>Click the <code>NEXT</code> button',
+        beforeShowPromise() {
+          goToPage('connection-success');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '.dialog-content > div:first-child',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+      
+      tour.addStep({ id: 'step-satellites',
+        text: 'Skip setting up satellites for now. You can set them up later using the app for better control.<br/>Click the <code>SKIP</code> button',
+        beforeShowPromise() {
+          goToPage('satellites');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '.dialog-content > div:first-child',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+
+      tour.addStep({ id: 'step-admin-setup',
+        text: 'Create a password and set up two security questions.<br/>Click the <code>NEXT</code> button',
+        beforeShowPromise() {
+          goToPage('admin-setup');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '.dialog-content > div:first-child',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+
+      tour.addStep({ id: 'step-wifi-setup',
+        text: 'Optionally change the Wi-Fi settings (name and password)<br/><i>If you are changing this now, you will have to connect to the new network name after clicking next</i><br/>Click the <code>NEXT</code> button',
+        beforeShowPromise() {
+          goToPage('wifi-setup');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '.dialog-content > div:first-child',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+      
+      tour.addStep({ id: 'step-setup-complete',
+        text: 'Configuration is now complete.<br/>Click the <code>NEXT</code> button',
+        beforeShowPromise() {
+          goToPage('setup-complete');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '.dialog-content',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+      
+      tour.addStep({ id: 'step-checking-connection2',
+        text: 'The Orbi will check the internet connection automatically....',
+        beforeShowPromise() {
+          goToPage('checking-connection2');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '.dialog-content > div:first-child',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+      
+      tour.addStep({ id: 'step-connection-success2',
+        text: 'Successful connection.<br/>Click the <code>NEXT</code> button',
+        beforeShowPromise() {
+          goToPage('connection-success2');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '.dialog-content > div:first-child',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+
+      tour.addStep({ id: 'step-firmware',
+        text: 'The Orbi will check for firmware updates. You can update now or skip and do it later via the app.<br/><i>(It is recommended that the Orbi is updated though)</i><br/>Click the <code>SKIP</code> button',
+        beforeShowPromise() {
+          goToPage('firmware');
+          return Promise.resolve();
+        },
+        attachTo: {
+          element: '#skip_button',
+          on: 'bottom'
+        },
+        buttons: [
+          {
+            action() {
+              return this.back();
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Back'
+          },
+          {
+            action() {
+              return this.next();
+            },
+            text: 'Next'
+          }
+        ],
+      });
+      
+      tour.addStep({ id: 'step-completed',
+        text: 'Setup should now be completed, and internet should all be working.',
+        buttons: [
+          {
+            action() {
+              return window.location.href = 'Login.html';
+            },
+            classes: 'shepherd-button-secondary',
+            text: 'Admin login'
+          },
+          {
+            action() {
+              return goToStep('home');
+            },
+            text: 'Restart'
+          }
+        ],
+      });
+    </script>
+  </head>
+  <body onload="tour.start()" class="text-center d-flex">
+    <div id="main-content" class="d-flex w-100 h-100  mx-auto flex-column">
+    </div>
+    <template id="template-home">
+      <main role="main" class="inner cover my-auto">
+        <div class="text-center logo-main pl-3 pr-3 p-md-0">
+          <img class="mobile img-fluid" src="./image/netgear-log.svg" alt="">
+        </div>
+        <div class=" text-center pl-3 pr-3 p-md-0">
+          <img class="mobile img-fluid" src="./image/orbi-mobile.png">
+        </div>
+        <div class="pl-3 pr-3 p-md-0">
+          <div class="heading2 text-center">For the fastest set up, download the Orbi app from <u>Orbi-App.com</u>
+          </div>
+          <div class="sub-heading">Go to Orbi-App.com and download the Orbi app on your mobile phone or tablet device using a mobile data connection to complete your Wi-Fi network set up.</div>
+        </div>
+      </main>
+      <footer id="link_gui" class=" d-flex justify-content-center align-items-center w-100" style="margin-top: 60px;">
+        <a id="click_here" href="#" onclick="goToStep('welcome');">If you don't have a compatible smartphone, click here <img class="img-fluid pl-2" src="./image/arrow-right.png" alt="icon right">
+        </a>
+      </footer>
+    </template>
+    <template id="template-welcome">
+      <div class="dialog-content">
+        <div id="card_welcome" class="install-card clearfix">
+          <img class="netgear-logo" src="./image/netgear.png">
+          <img class="orbi-logo svg-transition" src="./image/orbi.png">
+
+          <div class="desc-title">Welcome to Orbi</div>
+          <div class="desc-text">Your Orbi router needs to be configured for the first time.</div>
+          <div class="desc-text text-block-child">Make sure your Orbi router is connected to Internet with an Ethernet cable to continue.</div>
+          <button id="next" class="waves-effect waves-light btn button-nav" onclick="goToStep('tos');">
+            <span>NEXT</span>
+          </button>
+        </div>
+      </div>
+    </template>
+    <template id="template-tos">
+      <div class="dialog-content">
+        <!-- Welcome -->
+        <div id="card-tos" class="install-card clearfix">
+          <img class="netgear-logo" src="./image/netgear.png">
+          <div class="desc-title">Terms of Services</div>
+          <div class="tos-area">
+            <h2 style="margin-top:0cm;margin-right:0cm;margin-bottom:9.0pt;margin-left:
+0cm;background:white;vertical-align:baseline">
+              <u>
+                <span lang="EN-US" style="font-size:16.0pt;font-family:&quot;avenirnextltpro&quot;,serif;color:#2C262D">NETGEAR Terms and Conditions <o:p></o:p>
+                </span>
+              </u>
+            </h2>
+            <p style="margin:0cm;margin-bottom:.0001pt;line-height:19.5pt;vertical-align:
+baseline">
+              <strong>
+                <span lang="EN-US" style="font-family:&quot;avenirnextltpro&quot;,serif;
+color:#2C262D;border:none windowtext 1.0pt;mso-border-alt:none windowtext 0cm;
+padding:0cm">Please read these NETGEAR Terms and Conditions (“Terms and Conditions”) carefully. This agreement affects your rights.</span>
+              </strong>
+              <span lang="EN-US" style="font-family:&quot;avenirnextltpro&quot;,serif;color:#2C262D">
+                <br>
+                <br>
+                <strong>
+                  <span style="font-family:&quot;avenirnextltpro&quot;,serif;border:none windowtext 1.0pt;
+mso-border-alt:none windowtext 0cm;padding:0cm">IF YOU USE THE NETGEAR PRODUCT (AS DEFINED BELOW) YOU AGREE THAT YOU HAVE READ THIS AGREEMENT, UNDERSTAND IT, AND AGREE TO BE BOUND BY ITS TERMS AND CONDITIONS.</span>
+                </strong>
+                <br>
+                <br>
+              </span>
+            </p>
+            <script>
+              function tos_is_read() {
+                var checkBox = document.getElementById("have_read_tos");
+                var nextButton = document.getElementById("tos_next_button");
+                if (checkBox.checked == true) {
+                  nextButton.disabled = false;
+                } else {
+                  nextButton.disabled = true;
+                }
+              }
+            </script>
+            <p class="MsoNormal">
+              <span lang="EN-US">
+                <o:p>&nbsp;</o:p>
+              </span>
+            </p>
+          </div>
+          <div class="margin-top-10">
+            <input type="checkbox" id="have_read_tos" onclick="tos_is_read();">
+            <label for="have_read_tos">I agree to the Terms and Conditions and understand that NETGEAR will upgrade my Orbi devices automatically.</label>
+          </div>
+          <br>
+          <div class="margin-top-10">NETGEAR collects analytics data. <br>Learn more: <u>https://www.netgear.com/about/analyticsdatapolicy</u>
+          </div>
+          <button id="tos_next_button" class="waves-effect waves-light btn button-nav" disabled="" onclick="goToStep('checking-connection')">
+            <span>NEXT</span>
+          </button>
+        </div>
+      </div>
+    </template>
+    <template id="template-checking-connection">
+      <div class="dialog-content">
+        <div id="card-searching-internet" class="install-card clearfix">
+          <img class="netgear-logo" src="./image/netgear.png">
+          <img class="orbi-logo svg-transition" src="./image/orbi.png">
+
+          <div class="spinner"></div>
+          <div class="desc-text">Checking for Internet connection.</div>
+        </div>
+      </div>
+    </template>
+    <template id="template-connection-success">
+      <div class="dialog-content">
+        <div id="card-connected-internet" class="install-card clearfix">
+          <img class="netgear-logo" src="./image/netgear.png">
+          <img class="connected-internet-logo" src="./image/connected_internet.png">
+
+          <div class="desc-title">Successfully Connected to Internet</div>
+          <div class="desc-text">You successfully connected to the Internet.</div>
+          <button id="Next" class="waves-effect waves-light btn button-nav" onclick="goToStep('satellites')">
+            <span>NEXT</span>
+          </button>
+        </div>
+      </div>
+    </template>
+    <template id="template-satellites">
+      <div class="dialog-content">
+        <div id="card-setup-orbi" class="install-card clearfix">
+          <img class="netgear-logo" src="./image/netgear.png">
+          <img class="setup-orbi-logo" src="./image/setup_orbi.png">
+
+          <div class="desc-title">Setup Orbi Satellites</div>
+          <div class="desc-text">Let’s check your satellites' connection. Place your satellites and turn them on.</div>
+          <button id="next" class="waves-effect waves-light btn button-nav" onclick="return false;">
+            <span>NEXT</span>
+          </button>
+          <button id="skip" class="waves-effect btn-flat button-nav-skip" onclick="goToStep('admin-setup')">
+            <span>Skip</span>
+          </button>
+        </div>
+      </div>
+    </template>
+    <template id="template-admin-setup">
+      <div class="dialog-content">
+        <div id="card-orbi-admin-account" class="install-card clearfix">
+          <img class="netgear-logo" src="./image/netgear.png">
+          <div class="desc-title">Admin Account Settings</div>
+          <div class="desc-text">The admin password is used to log in to your Orbi router’s web interface. Secure your network by changing the admin password.</div>
+          <div class="input-wrapper col-lg-6 col-md-6 col-sm-6 float-left text-left">
+            <div class="input-title non-active-val disabled">Username</div>
+            <input id="admin" type="text" value="admin  " disabled="disabled">
+          </div>
+          <div class="input-wrapper col-lg-6 col-md-6 col-sm-6 input-wrapper-right text-left">
+            <div class="input-title active">Password</div>
+            <table>
+              <tbody>
+                <tr>
+                  <td style="padding:0px">
+                    <input type="password" autocomplete="off" size="20" name="sysNewPasswd" id="sys_new_passwd" onfocus="this.select();" onkeyup="debounce()" onkeydown="change_display()">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="input-wrapper col-lg-6 col-md-6 col-sm-6 float-right text-left">
+            <div class="input-title">Confirm New Password</div>
+            <input type="password" autocomplete="off" size="20" name="sysConfirmPasswd" id="sys_confirm_passwd" onfocus="this.select();">
+          </div>
+          <div class="input-wrapper col-lg-12 col-md-12 col-sm-12 float-left text-left w-100">
+            <div class="input-title ddl-title">Security Question #1</div>
+            <div class="dropdown">
+              <input type="button" id="sec_question_one" data-target="#sec_question_one sec_question_one" class="dropdown-menu btn btn-default dropdown-toggle" data-toggle="dropdown" aria-controls="sec_question_one">
+              <span>What was the name of the first NETGEAR product you purchased?</span>
+              <img class="ddl-caret" src="./image/caret.png">
+            </div>
+          </div>
+          <div class="input-wrapper col-lg-12 col-md-12 col-sm-12 float-left text-left w-100">
+            <div class="input-title">Answer</div>
+            <input type="text" autocomplete="off" maxlength="64" size="30" name="answer1" id="answer1" onfocus="this.select();">
+          </div>
+          <div class="input-wrapper col-lg-12 col-md-12 col-sm-12 float-left text-left w-100 margin-top-10">
+            <div class="input-title ddl-title">Security Question #2</div>
+            <div class="dropdown">
+              <input type="button" data-target="#sec_question_two sec_question_two" class="dropdown-menu btn btn-default dropdown-toggle" data-toggle="dropdown" aria-controls="sec_question_two">
+              <span>What is your best friend's first name?</span>
+              <img class="ddl-caret" src="./image/caret.png">
+            </div>
+          </div>
+          <div class="input-wrapper col-lg-12 col-md-12 col-sm-12 float-left text-left w-100">
+            <div class="input-title">Answer</div>
+            <input type="text" autocomplete="off" maxlength="64" size="30" name="answer2" id="answer2" onfocus="this.select();">
+          </div>
+          <button id="next" name="next" class="waves-effect waves-light btn button-nav margin-top-10" onclick="goToStep('wifi-setup');">
+            <span>NEXT</span>
+          </button>
+        </div>
+      </div>
+    </template>
+    <template id="template-wifi-setup">
+      <div class="dialog-content">
+        <div id="card-orbi-setup-wifi" class="install-card clearfix">
+          <img class="netgear-logo" src="./image/netgear.png">
+
+          <div class="desc-title">Set Up Your WiFi</div>
+          <div class="desc-text">Customize your network name and password</div>
+
+          <div class="input-wrapper input-text-box-one">
+            <div class="input-title non-active-val">Network Name (SSID)</div>
+            <input type="text" id="ssid" name="ssid" maxlength="32" value="ORBI84">
+          </div>
+
+          <div class="input-wrapper input-text-box-two">
+            <div class="input-title non-active-val">Password</div>
+            <input type="text" name="password" id="password" maxlength="64" value="squidward123">
+          </div>
+
+          <button id="next" class="waves-effect waves-light btn button-nav" onclick="goToStep('setup-complete');">
+            <span>NEXT</span>
+          </button>
+        </div>
+      </div>
+    </template>
+    <template id="template-setup-complete">
+      <div class="dialog-content">
+        <style>
+          .word_wrap {
+            word-wrap: break-word;
+            word-break: break-all;
+          }
+
+          td {
+            padding: 0;
+            width: 50%;
+          }
+        </style>
+        <div id="card_orbi_config_complete" class="install-card clearfix" style="margin-bottom:0px;">
+          <img class="netgear-logo" src="./image/netgear.png" />
+          <div class="desc-title">Configuration Complete</div>
+          <div class="desc-text"> Your new admin and WiFi credentials are displayed below. </div>
+          <div class="master-pin-wrapper" style="width: 80%">
+            <table style="table-layout: fixed">
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="pin-wrapper pin-wrapper-admin" style="width: 49%; height: auto; overflow: visible">
+                      <img class="pin-admin" src="./image/pin_admin.png" />
+                      <div class="pin-title word_wrap">admin</div>
+                      <div class="pin-desc word_wrap">******</div>
+                    </div>
+                    <div class="pin-wrapper pin-wrapper-WiFi" style="width: 49%; height: auto; overflow: visible">
+                      <img class="pin-WiFi" src="./image/pin_WiFi.png" />
+                      <div class="pin-title word_wrap">ORBI84</div>
+                      <div class="pin-desc word_wrap">squidward123</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button id="next" class="waves-effect waves-light btn button-nav" onclick="goToStep('checking-connection2')">
+            <span>NEXT</span>
+          </button>
+          <button id="print" class="waves-effect btn-flat button-nav-skip" onclick="return false;">
+            <span>PRINT WIFI CREDENTIALS</span>
+          </button>
+        </div>
+      </div>
+    </template>
+    <template id="template-checking-connection2">
+      <div class="dialog-content">
+        <div id="card-searching-internet" class="install-card clearfix">
+          <img class="netgear-logo" src="./image/netgear.png">
+          <img class="orbi-logo svg-transition" src="./image/orbi.png">
+
+          <div class="spinner"></div>
+          <div class="desc-text">Checking for Internet connection.</div>
+        </div>
+      </div>
+    </template>
+    <template id="template-connection-success2">
+      <div class="dialog-content">
+        <div id="card-connected-internet" class="install-card clearfix">
+          <img class="netgear-logo" src="./image/netgear.png">
+          <img class="connected-internet-logo" src="./image/connected_internet.png">
+
+          <div class="desc-title">Successfully Connected to Internet</div>
+          <div class="desc-text">You successfully connected to the Internet.</div>
+          <button id="Next" class="waves-effect waves-light btn button-nav" onclick="goToStep('firmware')">
+            <span>NEXT</span>
+          </button>
+        </div>
+      </div>
+    </template>
+    <template id="template-firmware">
+      <style>
+        .skip_btn{color:#00b4f5;cursor:pointer;text-decoration:none;font-size:13px}.wizard_body_container{max-width:960px;margin:25px auto 0 auto;background:#fff}#page_title{font:bold 17px arial;color:#9d98ff}#header{width:960px;height:80px;margin:0 auto}.top_name{height:77px;width:730px;float:left;margin:0;overflow:hidden}.title_div{height:56px;width:267px;margin:6px 0;overflow:hidden;background:url(../image/logo.png) no-repeat 0 0;background-size:contain}#fw_check_table2 table{width:80%}#fw_check_table2 table tr{text-align:center}@media (max-width:780px){.wizard_body_container{width:100%}#header{width:100%}.top_name{height:77px;width:100%}.title_div{height:43px;width:100%}#fw_check_table2 table{width:100%}}
+      </style>
+      <div class="wizard_body_container w-100">
+        <table id="online_content" width="100%" border="0" cellpadding="0" cellspacing="2">
+          <tbody>
+            <tr>
+              <td>
+                <div id="page_title">Firmware Update</div>
+              </td>
+              <td align="right">
+                <a class="skip_btn" id="skip_button" style="padding:10px;" onclick="goToStep('completed')">Skip &gt;&gt;</a>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <hr class="blueBar">
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">&nbsp;</td>
+              <td></td>
+            </tr>
+            <tr></tr>
+            <tr>
+              <td>Check for new version from the Internet.</td>
+              <td align="right">
+                <input type="button" class="upg_btn" name="Refresh" id="refresh" value="Check">
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <hr class="blueBar">
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">&nbsp;</td>
+              <td></td>
+            </tr>
+            <tr></tr>
+            <tr>
+              <td colspan="2" id="fw_check_table2">
+                <table id="fw_check_table" border="1" cellpadding="2" cellspacing="0">
+                  <tbody>
+                    <tr>
+                      <td></td>
+                      <td>Model Name</td>
+                      <td>Device Name</td>
+                      <td>Current Version</td>
+                      <td>Status</td>
+                    </tr>
+                    <tr>
+                      <td>Router</td>
+                      <td>RBR350</td>
+                      <td>RBR350</td>
+                      <td>V4.20.0.4_3.100.71</td>
+                      <td style="text-align:left">No new firmware version available.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">&nbsp;</td>
+              <td></td>
+            </tr>
+            <tr></tr>
+            <tr>
+              <td>&nbsp;</td>
+              <td align="right">
+                <input type="button" class="upg_btn" name="upgrade_all" id="upgrade_all" value="Update All" disabled="">
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <hr class="blueBar">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
+    <style>
+:root {
+	--tour-primary: #00aee6;
+	--tour-primary-dark: #007fb0;
+	--tour-accent: #7bd8ff;
+	--tour-bg: #ffffff;
+	--tour-text: #222222;
+	--tour-muted-text: #666666;
+	--tour-border: #e0f4ff;
+	--tour-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+	--tour-radius-lg: 18px;
+	--tour-radius-pill: 999px;
+	--tour-font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif
+}
+
+.shepherd-element {
+	font-family: var(--tour-font-family);
+	background: radial-gradient(circle at top left, #e9f9ff 0, #fff 55%, #f7fcff 100%);
+	color: var(--tour-text);
+	border-radius: var(--tour-radius-lg);
+	box-shadow: var(--tour-shadow);
+}
+
+.shepherd-element .shepherd-header {
+	background: linear-gradient(135deg, var(--tour-primary), var(--tour-primary-dark));
+	color: #fff
+}
+
+
+.shepherd-element .shepherd-cancel-icon {
+	color: #fff;
+}
+
+.shepherd-element .shepherd-text {
+	color: var(--tour-text);
+}
+
+.shepherd-element .shepherd-text .subtext,
+.shepherd-element .shepherd-text small {
+	color: var(--tour-muted-text)
+}
+
+.shepherd-element .shepherd-button {
+	border-radius: var(--tour-radius-pill);
+	font-size: .85rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .1s ease
+}
+
+.shepherd-element .shepherd-button:not(.shepherd-button-secondary) {
+	background: linear-gradient(135deg, var(--tour-primary), var(--tour-primary-dark));
+	color: #fff;
+	box-shadow: 0 6px 14px rgba(0, 174, 230, .4)
+}
+
+.shepherd-element .shepherd-button:not(.shepherd-button-secondary):hover {
+	box-shadow: 0 8px 18px rgba(0, 174, 230, .5);
+}
+
+.shepherd-element .shepherd-button:not(.shepherd-button-secondary):active {
+	box-shadow: 0 4px 10px rgba(0, 174, 230, .35)
+}
+
+.shepherd-element .shepherd-button.shepherd-button-secondary {
+	background: #fff;
+	color: var(--tour-primary-dark);
+	border: 1px solid var(--tour-accent)
+}
+
+.shepherd-element .shepherd-button.shepherd-button-secondary:hover {
+	background: #f2fbff
+}
+
+.shepherd-element[data-popper-placement^=bottom] .shepherd-arrow::before {
+  background: var(--tour-primary);
+  filter: brightness(0.9);
+}
+
+.shepherd-element[data-popper-placement^=top] .shepherd-arrow::before {
+  background: #f7f7f7;
+}
+</style>
+  </body>
+</html>
